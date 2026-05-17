@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  body {
+    min-height: 100vh;
+    background: #0a0a0a;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+ 
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,80,30,0.12) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    pointer-events: none;
+    animation: drift 8s ease-in-out infinite alternate;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(255,180,0,0.07) 0%, transparent 70%);
+    bottom: -80px; left: -80px;
+    pointer-events: none;
+    animation: drift 10s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes drift { from { transform: translate(0,0); } to { transform: translate(30px, 20px); } }
+ 
+  .card {
+    position: relative;
+    width: 480px;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 4px;
+    padding: 48px 44px 40px;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+ 
+  /* Accent bar */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff501e, #ffb400);
+    border-radius: 4px 4px 0 0;
+  }
+ 
+  .eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #ff501e;
+    margin-bottom: 8px;
+  }
+ 
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 0.04em;
+    color: #f0ece4;
+    line-height: 1;
+    margin-bottom: 32px;
+  }
+ 
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+ 
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .field.full { grid-column: 1 / -1; }
+ 
+  label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #666;
+  }
+ 
+  input {
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    border-radius: 3px;
+    padding: 11px 14px;
+    color: #f0ece4;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    width: 100%;
+  }
+  input::placeholder { color: #3a3a3a; }
+  input:focus {
+    border-color: #ff501e;
+    background: #161616;
+  }
+ 
+  .btn {
+    display: block;
+    width: 100%;
+    margin-top: 24px;
+    padding: 15px;
+    background: linear-gradient(135deg, #ff501e, #ffb400);
+    border: none;
+    border-radius: 3px;
+    color: #0a0a0a;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn:hover { opacity: 0.92; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+ 
+  .result {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: #0e0e0e;
+    border: 1px solid #222;
+    border-left: 3px solid #ffb400;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .result-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #555;
+  }
+  .result-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: #ffb400;
+    letter-spacing: 0.04em;
+  }
+  .result-inner { display: flex; flex-direction: column; gap: 2px; }
+</style>
+</head>
+<body>
+ 
+<div class="card">
+  <p class="eyebrow">ML Model</p>
+  <h1>Car Price Prediction</h1>
+ 
+  <form action="{{url_for('predict_datapoint')}}" method="post">
+    <div class="grid">
+      <div class="field full">
+        <label>Fuel Type</label>
+        <input type="text" name="Fueltype" placeholder="0 = Gas &nbsp; 1 = Diesel" required />
+      </div>
+ 
+      <div class="field">
+        <label>Door Number</label>
+        <input type="text" name="Doornumber" placeholder="e.g. 4" required />
+      </div>
+      <div class="field">
+        <label>Engine Size</label>
+        <input type="text" name="Enginesize" placeholder="e.g. 130" required />
+      </div>
+ 
+      <div class="field">
+        <label>Car Length</label>
+        <input type="text" name="Carlength" placeholder="inches" required />
+      </div>
+      <div class="field">
+        <label>Car Width</label>
+        <input type="text" name="Carwidth" placeholder="inches" required />
+      </div>
+      <div class="field">
+        <label>Car Height</label>
+        <input type="text" name="Carheight" placeholder="inches" required />
+      </div>
+ 
+      <div class="field">
+        <label>Horsepower</label>
+        <input type="text" name="Horsepower" placeholder="e.g. 102" required />
+      </div>
+      <div class="field full">
+        <label>Peak RPM</label>
+        <input type="text" name="Peakrpm" placeholder="e.g. 5500" required />
+      </div>
+    </div>
+ 
+    <button type="submit" class="btn">Predict Price</button>
+  </form>
+ 
+  <div class="result">
+    <div class="result-inner">
+      <span class="result-label">Estimated Value</span>
+      <span class="result-value">{{results}}</span>
+    </div>
+  </div>
+</div>
+ 
+</body>
+</html>
+ 
