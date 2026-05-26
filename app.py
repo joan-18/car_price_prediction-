@@ -5,11 +5,13 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 app= Flask(__name__)
-app=app
 
 
-standard_scaler=pickle.load(open('models/scaler.pkl','rb'))
-lassocv_model=pickle.load(open('models/lassocv.pkl','rb'))
+import os
+base_dir = os.path.dirname(__file__)
+standard_scaler = pickle.load(open(os.path.join(base_dir, 'models', 'scaler.pkl'), 'rb'))
+lassocv_model   = pickle.load(open(os.path.join(base_dir, 'models', 'lassocv.pkl'), 'rb'))
+
 
 
 
